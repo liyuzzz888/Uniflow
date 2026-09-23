@@ -1,0 +1,35 @@
+{
+  "name": "uniflow",
+  "productName": "UniFlow",
+  "version": "0.7.7",
+  "uniflowBuildNumber": 18,
+  "private": true,
+  "description": "A calm, local-first timetable and planning app for university life.",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "prepare:ocr": "node scripts/prepare-ocr-assets.mjs",
+    "prepare:icon": "node scripts/make-icon.mjs",
+    "prepare:version": "node scripts/sync-version.mjs",
+    "start:mac": "npm run prepare:version && npm run prepare:ocr && electron .",
+    "build:mac": "npm run prepare:version && npm run prepare:ocr && npm run prepare:icon && node scripts/package-mac.cjs && node scripts/prune-mac-build.mjs",
+    "build:mac:mas": "npm run prepare:version && npm run prepare:ocr && npm run prepare:icon && node scripts/package-mac-mas.cjs && node scripts/prune-mac-build.mjs",
+    "sync:ios": "npm run prepare:version && npm run prepare:ocr && npx cap sync ios",
+    "open:ios": "npx cap open ios",
+    "check": "node scripts/sync-version.mjs --check && node --check dist/app.js && node --check dist/schedule.js && node --check dist/history.js && node --check desktop/main.cjs && node --check scripts/package-mac.cjs && node --check scripts/package-mac-mas.cjs && node --check scripts/prune-mac-build.mjs && npm test",
+    "test": "node --test tests/*.test.cjs"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2",
+    "@electron/packager": "^20.3.0",
+    "@tesseract.js-data/chi_sim": "^1.0.0",
+    "@tesseract.js-data/eng": "^1.0.0",
+    "electron": "^44.4.3",
+    "sharp": "^0.35.4",
+    "tesseract.js": "^5.1.1",
+    "tesseract.js-core": "^5.1.1"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2"
+  }
+}

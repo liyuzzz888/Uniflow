@@ -1,0 +1,8 @@
+{
+  "appId": "app.uniflow.ios",
+  "appName": "UniFlow",
+  "webDir": "dist",
+  "ios": {
+    "contentInset": "always"
+  }
+}

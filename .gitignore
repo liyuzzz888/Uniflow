@@ -1,0 +1,9 @@
+node_modules/
+build/
+ios/Pods/
+ios/DerivedData/
+ios/App/App/public/
+dist/vendor/
+.DS_Store
+.env
+.env.*

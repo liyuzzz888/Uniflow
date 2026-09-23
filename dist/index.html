@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4f5f7" />
+    <meta name="description" content="UniFlow 大学时序——为大学生活设计的轻量、本地优先时间管理工具。" />
+    <title>UniFlow · 大学时序</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%231d6fe8'/%3E%3Cpath d='M18 18v19c0 8 5 12 14 12s14-4 14-12V18' fill='none' stroke='white' stroke-width='7' stroke-linecap='round'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="主导航">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">U</span>
+          <div><strong>UniFlow</strong><span data-i18n="brandSub">大学时序</span></div>
+        </div>
+
+        <nav class="nav-list">
+          <button class="nav-item active" data-view="today"><span class="nav-icon">⌂</span><span data-i18n="today">今日</span></button>
+          <button class="nav-item" data-view="week"><span class="nav-icon">▦</span><span data-i18n="week">本周</span></button>
+          <button class="nav-item" data-view="todo"><span class="nav-icon">✓</span><span data-i18n="todo">待办</span><span class="nav-badge" id="todoBadge">4</span></button>
+          <div class="nav-divider"></div>
+          <button class="nav-item" data-view="courses"><span class="nav-icon">◇</span><span data-i18n="courses">课程</span></button>
+          <button class="nav-item" data-view="import"><span class="nav-icon">⇧</span><span data-i18n="import">导入课表</span></button>
+        </nav>
+
+        <div class="sidebar-foot">
+          <div class="semester-chip"><span class="status-dot"></span><span id="semesterLabel">2026 秋季学期</span></div>
+          <button class="nav-item" id="openSettings"><span class="nav-icon">⚙</span><span data-i18n="settings">设置</span></button>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <button class="mobile-brand" aria-label="打开导航"><span class="brand-mark">U</span></button>
+          <div class="topbar-title" id="topbarTitle">今日</div>
+          <div class="topbar-actions">
+            <button class="add-button" id="quickAdd"><span>＋</span><span class="add-label" data-i18n="addPlan">添加安排</span></button>
+          </div>
+        </header>
+
+        <div id="viewRoot" class="view-root" aria-live="polite"></div>
+      </main>
+
+      <nav class="bottom-nav" aria-label="移动端主导航">
+        <button class="bottom-item active" data-view="today"><span>⌂</span><small data-i18n="today">今日</small></button>
+        <button class="bottom-item" data-view="week"><span>▦</span><small data-i18n="week">本周</small></button>
+        <button class="bottom-add" id="mobileAdd" aria-label="添加">＋</button>
+        <button class="bottom-item" data-view="todo"><span>✓</span><small data-i18n="todo">待办</small></button>
+        <button class="bottom-item" id="mobileSettings"><span>⚙</span><small data-i18n="settings">设置</small></button>
+      </nav>
+    </div>
+
+    <div class="scrim" id="scrim" hidden></div>
+
+    <section class="settings-sheet" id="settingsSheet" aria-label="设置" aria-hidden="true">
+      <header class="sheet-header">
+        <div><p class="eyebrow" data-i18n="preferences">偏好设置</p><h2 data-i18n="settings">设置</h2></div>
+        <button class="close-button" id="closeSettings" aria-label="关闭">×</button>
+      </header>
+      <div class="sheet-body">
+        <label class="setting-row text-setting">
+          <span><strong data-i18n="name">称呼</strong><small data-i18n="nameHelp">仅保存在这台设备</small></span>
+          <input id="nameInput" type="text" maxlength="18" value="宇泽" />
+        </label>
+
+        <div class="setting-row stacked">
+          <span><strong data-i18n="appearance">外观</strong></span>
+          <div class="segmented" id="themeControl">
+            <button data-value="light" data-i18n="light">浅色</button>
+            <button data-value="system" class="active" data-i18n="system">自动</button>
+            <button data-value="dark" data-i18n="dark">深色</button>
+          </div>
+        </div>
+
+        <div class="setting-row stacked">
+          <span><strong data-i18n="fontSize">字号</strong></span>
+          <div class="segmented" id="fontControl">
+            <button data-value="small" data-i18n="compact">紧凑</button>
+            <button data-value="medium" class="active" data-i18n="standard">标准</button>
+            <button data-value="large" data-i18n="comfortable">舒适</button>
+          </div>
+        </div>
+
+        <div class="setting-row stacked">
+          <span><strong data-i18n="language">语言</strong></span>
+          <div class="segmented" id="languageControl">
+            <button data-value="zh" class="active">中文</button>
+            <button data-value="en">English</button>
+            <button data-value="ja">日本語</button>
+            <button data-value="bilingual">中 / EN</button>
+          </div>
+        </div>
+
+        <label class="setting-row">
+          <span><strong data-i18n="courseMode">课表模式</strong><small data-i18n="courseModeHelp">在时间表中显示课程</small></span>
+          <span class="switch"><input id="courseModeToggle" type="checkbox" checked /><span></span></span>
+        </label>
+
+        <label class="setting-row text-setting">
+          <span><strong data-i18n="semester">当前学期</strong></span>
+          <input id="semesterInput" type="text" maxlength="30" value="2026 秋季学期" />
+        </label>
+
+        <label class="setting-row text-setting">
+          <span><strong data-i18n="semesterStart">学期第一周</strong></span>
+          <input id="semesterStartInput" type="date" value="2026-09-07" />
+        </label>
+
+        <div class="setting-note"><span>⌁</span><p><strong data-i18n="localFirst">本地优先</strong><br><span data-i18n="localFirstHelp">所有更改只保存在这台设备，不需要登录。</span></p></div>
+        <div class="app-version" id="appVersion">UniFlow 0.7.0 (11)</div>
+        <div class="app-credit" data-i18n="rikoCredit">riko 倾情呈现</div>
+      </div>
+    </section>
+
+    <dialog class="modal" id="addModal">
+      <form method="dialog" id="addForm">
+        <header class="modal-header"><div><p class="eyebrow" id="modalEyebrow" data-i18n="newItem">新建</p><h2 id="modalTitle">添加安排</h2></div><button type="button" class="close-button" data-close-modal aria-label="关闭">×</button></header>
+        <div class="type-picker" id="typePicker" role="tablist" aria-label="项目类型">
+          <button type="button" role="tab" aria-selected="true" data-type="block" class="active" data-i18n="plan">安排</button>
+          <button type="button" role="tab" aria-selected="false" data-type="task" data-i18n="task">小任务</button>
+          <button type="button" role="tab" aria-selected="false" data-type="todo" data-i18n="todo">待办</button>
+          <button type="button" role="tab" aria-selected="false" data-type="course" data-i18n="course">课程</button>
+        </div>
+        <label class="field"><span data-i18n="title">标题</span><input name="title" id="itemTitle" required autocomplete="off" placeholder="例如：图书馆自习" /></label>
+        <div class="task-carry-fields" hidden>
+          <label class="field"><span data-i18n="carryLabelDate">延续标签日期</span><input name="carryFrom" id="taskCarryFrom" type="date" /></label>
+          <label class="toggle-field"><span data-i18n="showCarryLabel">显示“延续自”标签</span><span class="switch"><input name="showCarryLabel" id="showCarryLabel" type="checkbox" checked /><span></span></span></label>
+        </div>
+        <div class="field-grid plan-fields">
+          <label class="field"><span id="itemDateLabel" data-i18n="date">日期</span><input name="date" id="itemDate" type="date" required /></label>
+          <label class="field time-field"><span id="itemTimeLabel" data-i18n="time">时间</span><input name="time" id="itemTime" type="time" /></label>
+          <label class="field plan-end-field"><span data-i18n="endTime">结束时间</span><input name="planEnd" id="planEnd" type="time" /></label>
+        </div>
+        <label class="field plan-location-field"><span data-i18n="planLocationOptional">地点（可选）</span><input name="planLocation" id="planLocation" autocomplete="off" placeholder="例如：图书馆" /></label>
+        <div class="course-fields" hidden>
+          <div class="field-grid">
+            <label class="field"><span data-i18n="weekday">星期</span><select name="weekday" id="courseWeekday"><option value="1">周一</option><option value="2">周二</option><option value="3">周三</option><option value="4">周四</option><option value="5">周五</option><option value="6">周六</option><option value="0">周日</option></select></label>
+            <label class="field"><span data-i18n="locationOptional">上课地点（可选）</span><input name="location" id="courseLocation" autocomplete="off" placeholder="例如：HGX207" /></label>
+          </div>
+          <div class="field-grid">
+            <label class="field"><span data-i18n="startTime">开始时间</span><input name="courseStart" id="courseStart" type="time" /></label>
+            <label class="field"><span data-i18n="endTime">结束时间</span><input name="courseEnd" id="courseEnd" type="time" /></label>
+          </div>
+          <label class="field"><span data-i18n="weeksOptional">上课周数（可选）</span><input name="weeks" id="courseWeeks" inputmode="text" autocomplete="off" placeholder="例如：1-5,7-16" /></label>
+        </div>
+        <label class="toggle-field schedule-field"><span data-i18n="showSchedule">显示在时间表</span><span class="switch"><input name="showSchedule" type="checkbox" /><span></span></span></label>
+        <footer class="modal-footer"><button type="button" class="delete-item-button" id="deleteItemButton" hidden>删除此项</button><button type="button" class="text-button" data-close-modal data-i18n="cancel">取消</button><button type="submit" value="default" class="primary-button" data-i18n="save">保存</button></footer>
+      </form>
+    </dialog>
+
+    <dialog class="modal confirm-modal" id="deleteItemModal">
+      <div class="confirm-content">
+        <span class="confirm-icon">⌫</span>
+        <p class="eyebrow" id="deleteItemEyebrow">删除</p>
+        <h2 id="deleteItemQuestion">确定删除？</h2>
+        <p id="deleteItemHelp">删除后无法恢复。</p>
+      </div>
+      <footer class="modal-footer"><button type="button" class="text-button" data-close-modal data-i18n="cancel">取消</button><button type="button" class="danger-confirm" id="confirmDeleteItem" data-i18n="delete">删除</button></footer>
+    </dialog>
+
+    <dialog class="modal confirm-modal" id="clearCoursesModal">
+      <div class="confirm-content">
+        <span class="confirm-icon">⌫</span>
+        <p class="eyebrow" data-i18n="clearTimetable">清除课表</p>
+        <h2 data-i18n="clearTimetableQuestion">清除全部课程？</h2>
+        <p data-i18n="clearTimetableHelp">只会清除课程，不影响安排、小任务和待办。</p>
+      </div>
+      <footer class="modal-footer"><button type="button" class="text-button" data-close-modal data-i18n="cancel">取消</button><button type="button" class="danger-confirm" id="confirmClearCourses" data-i18n="clear">清除</button></footer>
+    </dialog>
+
+    <script src="./version.js?v=18"></script>
+    <script src="./schedule.js?v=18"></script>
+    <script src="./history.js?v=18"></script>
+    <script src="./vendor/tesseract/tesseract.min.js"></script>
+    <script src="./app.js?v=18"></script>
+  </body>
+</html>
