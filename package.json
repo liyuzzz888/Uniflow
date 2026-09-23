@@ -4,7 +4,7 @@
   "version": "0.7.7",
   "uniflowBuildNumber": 18,
   "private": true,
-  "description": "A calm, local-first timetable and planning app for university life.",
+  "description": "A small timetable and planning app I made for university life.",
   "main": "desktop/main.cjs",
   "scripts": {
     "prepare:ocr": "node scripts/prepare-ocr-assets.mjs",

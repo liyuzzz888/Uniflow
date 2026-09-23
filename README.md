@@ -1,38 +1,72 @@
-# UniFlow · 大学时序
+# UniFlow
 
-本地优先的大学生日程与课表应用。课表图片识别在设备上完成；识别出的课程需要确认后才写入课表。
+一个给大学生用的轻量时间表。
 
-这是 UniFlow 第一版冻结代码，使用 MIT License 开源。当前版本为 0.7.7（构建 18）。
+我做 UniFlow，是因为自己经常在课表、备忘录和待办事项之间来回切换。它现在还不是一个“大而全”的效率平台，只想把上课、临时安排、截止日期和当天的小任务放在一个安静的地方。
 
-待办与每日小任务会保留本机历史，可按标题、日期、类型和完成状态查询。每日小任务的未完成项目会自动延续到下一天。
+当前是第一版冻结版本：**0.7.7（构建 18）**。项目以 MIT License 开源，欢迎看看代码，也欢迎提 Issue。
 
-## 目前可以使用的版本
+## 先试试看
 
-- Mac：`build/UniFlow-darwin-arm64/UniFlow.app`。这是供本机试用的未签名版本，尚不是可上传 App Store 的发行包。
-- iPhone：`ios/App/App.xcodeproj` 已建立，图标、启动画面和离线资源已放入工程。此电脑尚未安装完整 Xcode，所以尚未编译或在真机上验证。
-- 网页预览：`dist/index.html`。网页、Mac 应用和 iPhone 应用各自保存本机数据，目前不会自动互相迁移。
+需要 macOS 和 Node.js。克隆项目后，在项目目录运行：
 
-## 继续开发
-
-```sh
+```bash
 npm install
-npm run build:mac
+npm run start:mac
+```
+
+这会准备离线 OCR 资源并打开 Mac 版。第一次启动可能需要一点时间。
+
+如果只想检查代码：
+
+```bash
+npm run check
+```
+
+## 目前能做什么
+
+- 导入课表图片，也可以直接拖入或粘贴图片；识别结果确认后才会写入课表
+- 保留课程名称、上课地点、上下课时间和上课周数
+- 点击“本周”的课程，只删除这一周的这一次
+- 添加带起止时间和地点的安排
+- 管理待办和当天小任务；未完成的小任务会延续到下一天
+- 查看待办与小任务历史，并按标题、日期、类型和完成状态搜索
+- 中 / 英 / 日三种语言，浅色 / 深色模式和字号设置
+- 数据默认只保存在本机，不需要账号
+
+## 目录大概是这样
+
+```text
+dist/       网页界面、样式和课表逻辑
+desktop/    Electron 的 Mac 入口
+ios/        Capacitor iPhone 工程
+scripts/    OCR、版本同步和打包脚本
+tests/      课表与历史查询测试
+docs/       上架前的技术记录
+```
+
+界面没有使用前端框架，主要是原生 HTML、CSS 和 JavaScript。这样做不一定最时髦，但目前更容易读，也方便我自己继续改。
+
+## iPhone 工程
+
+电脑上安装完整 Xcode 后，可以同步并打开 iPhone 工程：
+
+```bash
 npm run sync:ios
 npm run open:ios
 ```
 
-构建产物、依赖目录和 iOS 同步生成的 `ios/App/App/public/` 不进入仓库；运行 `npm run sync:ios` 可重新生成 iOS 静态资源。
+正式签名、Bundle ID、隐私声明和 App Store 提交还没有放进第一版冻结范围。Mac 当前生成的是本机测试用的 arm64 `.app`，不是已经签名的商店发行包。
 
-Mac 打包需要 macOS；iPhone 编译需要完整 Xcode。
+## 版本约定
 
-测试版本号由 `package.json` 中的 `version` 和 `uniflowBuildNumber` 统一管理。每次交付新版提高版本号；每次生成新的分发构建提高构建号。打包脚本会把它们同步到 Mac、iPhone 和设置页；`npm run check` 会检查是否一致。
+版本写在 `package.json`：
 
-核心页面使用原生 HTML、CSS 与 JavaScript，不依赖前端框架。时间表规则与历史查询各自放在独立模块中并有自动测试；Mac 打包采用严格白名单，只收录运行所需文件。离线中文/英文 OCR 资源约 64 MB，Mac 包其余的大部分体积来自 Electron 运行环境。
+- `version` 是用户看到的版本号
+- `uniflowBuildNumber` 是每次分发构建递增的内部编号
 
-## 上架前还需要
+修改版本后运行 `npm run sync:ios`，再用 `npm run check` 检查 Mac、iPhone 和设置页是否同步。
 
-1. 确定正式的 Bundle ID，并在 Apple Developer 注册；现在的 `app.uniflow.desktop` 和 `app.uniflow.ios` 只是工程占位值。
-2. 使用你的 Apple Developer 账号配置签名、证书及 App Store Connect。
-3. Mac 版切换为 Electron 的 MAS 构建并启用 App Sandbox，验证图片选择、剪贴板和本地识别；当前普通 `.app` 不可直接上传 Mac App Store。
-4. 用 Xcode 在 iPhone 模拟器及真机测试，检查图片选择与粘贴、日语及深浅色模式。
-5. 准备商店截图、应用说明、隐私信息，并提交 Apple 审核；是否获批由 Apple 决定。
+## 开源许可
+
+MIT License。详见 [LICENSE](LICENSE)。
