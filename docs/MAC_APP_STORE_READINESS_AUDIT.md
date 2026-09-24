@@ -18,7 +18,7 @@
 - Mac 入口：`desktop/main.cjs`，由 Electron 44.4.3 加载 `dist/index.html`。
 - Mac 打包：`scripts/package-mac.cjs`，调用 `@electron/packager`，固定 `platform: 'darwin'`、`arch: 'arm64'`、`appBundleId: 'app.uniflow.desktop'`。
 - iOS 工程：`ios/App/App.xcodeproj`，只有一个 `App` iOS target；其 deployment target 为 iOS 15.0，Swift 版本为 5.0，Bundle ID 为 `app.uniflow.ios`。
-- 当前 Mac 版本/构建号：0.7.7 (18)，与 `package.json`、`dist/version.js` 及 iOS 工程同步。
+- 当前 Mac 版本/构建号：0.7.8 (19)，与 `package.json`、`dist/version.js` 及 iOS 工程同步。
 - 当前生成 Mac 包最低系统版本：macOS 13.0；当前构建架构为 Apple Silicon arm64。仓库没有 Intel/x86_64 或 universal 构建配置。
 - 现有构建产物约 299 MB，主要来自 Electron runtime 与离线 OCR 资源。
 
@@ -62,7 +62,7 @@ Reason:
 Evidence:
 
 - `npm run check` 中的 `scripts/sync-version.mjs --check` 通过。
-- 当前版本为 0.7.7，构建号为 18。
+- 当前版本为 0.7.8，构建号为 19。
 
 Reason:
 
@@ -84,7 +84,7 @@ Reason:
 Evidence:
 
 - 在允许下载 Electron 运行时后，`npm run build:mac` 完成，生成 `build/UniFlow-darwin-arm64/UniFlow.app`。
-- 产物内含 `UniFlow` 图标资源、版本 0.7.7/18 和最低 macOS 13.0。
+- 产物内含 `UniFlow` 图标资源、版本 0.7.8/19 和最低 macOS 13.0。
 
 Reason:
 

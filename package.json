@@ -1,8 +1,8 @@
 {
   "name": "uniflow",
   "productName": "UniFlow",
-  "version": "0.7.7",
-  "uniflowBuildNumber": 18,
+  "version": "0.7.8",
+  "uniflowBuildNumber": 19,
   "private": true,
   "description": "A small timetable and planning app I made for university life.",
   "main": "desktop/main.cjs",

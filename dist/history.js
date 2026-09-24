@@ -15,6 +15,10 @@
     }));
   }
 
+  function visibleTodosForDate(todos = [], today = '') {
+    return todos.filter(todo => !todo?.done || !validDate(todo?.completedOn) || todo.completedOn >= today);
+  }
+
   function buildHistoryEntries({ todos = [], tasks = [] } = {}) {
     const todoEntries = todos.map(todo => ({
       kind: 'todo', id: todo.id, title: todo.title || '', done: Boolean(todo.done),
@@ -46,7 +50,7 @@
     });
   }
 
-  const api = Object.freeze({ normalizeHistoryTodos, buildHistoryEntries, filterHistoryEntries });
+  const api = Object.freeze({ normalizeHistoryTodos, visibleTodosForDate, buildHistoryEntries, filterHistoryEntries });
   root.UniFlowHistory = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })(typeof window !== 'undefined' ? window : globalThis);

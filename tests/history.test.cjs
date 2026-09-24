@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { normalizeHistoryTodos, buildHistoryEntries, filterHistoryEntries } = require('../dist/history.js');
+const { normalizeHistoryTodos, visibleTodosForDate, buildHistoryEntries, filterHistoryEntries } = require('../dist/history.js');
 
 test('normalizes legacy todo history without losing deadlines', () => {
   const todos = normalizeHistoryTodos([
@@ -28,4 +28,14 @@ test('history search accepts exact dates', () => {
     todos: [{ id: 'todo-1', title: '金融法笔记', date: '2026-10-03', done: false, createdOn: '2026-09-22' }]
   });
   assert.equal(filterHistoryEntries(entries, { query: '2026-10-03' }).length, 1);
+});
+
+test('archives completed todos after the completion day', () => {
+  const todos = [
+    { id: 'today', title: '今天完成', done: true, completedOn: '2026-09-24' },
+    { id: 'old', title: '昨天完成', done: true, completedOn: '2026-09-23' },
+    { id: 'open', title: '仍未完成', done: false, date: '2026-09-23' }
+  ];
+  assert.deepEqual(visibleTodosForDate(todos, '2026-09-24').map(todo => todo.id), ['today', 'open']);
+  assert.deepEqual(visibleTodosForDate(todos, '2026-09-25').map(todo => todo.id), ['open']);
 });

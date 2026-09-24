@@ -2,7 +2,7 @@ const DAY = 86400000;
 const $ = (selector, root = document) => root.querySelector(selector);
 const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
 const { periodTimes, periods, locationFromText, periodSpan, excludeCourseOccurrence, isCourseOccurrenceExcluded, mergeUniqueCourses, normalizeDailyTasks, dailyTasksForDate, taskCarryLabelDate } = window.UniFlowSchedule;
-const { normalizeHistoryTodos, buildHistoryEntries, filterHistoryEntries } = window.UniFlowHistory;
+const { normalizeHistoryTodos, visibleTodosForDate, buildHistoryEntries, filterHistoryEntries } = window.UniFlowHistory;
 
 const dictionary = {
   brandSub: ['大学时序', 'Campus time'], today: ['今日', 'Today'], week: ['本周', 'Week'], todo: ['待办', 'Todo'], history: ['历史', 'History'],
@@ -339,18 +339,20 @@ function todoDeadlineLabel(todo) {
 }
 
 function renderTodo() {
+  const visibleTodos = visibleTodosForDate(state.todos, localISO());
+  const groupDate = todo => todo.done && todo.completedOn ? todo.completedOn : todo.date;
   const groups = [
-    { key: 'today', label: tr('todayGroup'), matches: todo => sameDay(todo.date) },
-    { key: 'tomorrow', label: tr('tomorrow'), matches: todo => sameDay(todo.date, 1) },
-    { key: 'later', label: tr('later'), matches: todo => todoDate(todo.date) && !sameDay(todo.date) && !sameDay(todo.date, 1) }
+    { key: 'today', label: tr('todayGroup'), matches: todo => sameDay(groupDate(todo)) },
+    { key: 'tomorrow', label: tr('tomorrow'), matches: todo => sameDay(groupDate(todo), 1) },
+    { key: 'later', label: tr('later'), matches: todo => todoDate(groupDate(todo)) && !sameDay(groupDate(todo)) && !sameDay(groupDate(todo), 1) }
   ];
-  if (state.todos.some(todo => !todoDate(todo.date))) groups.push({ key: 'none', label: tr('noDeadline'), matches: todo => !todoDate(todo.date) });
+  if (visibleTodos.some(todo => !todoDate(groupDate(todo)))) groups.push({ key: 'none', label: tr('noDeadline'), matches: todo => !todoDate(groupDate(todo)) });
   const open = state.todos.filter(t=>!t.done).length;
   const done = state.todos.filter(t=>t.done).length;
   return `<div class="content-wrap narrow">
     <div class="page-heading"><div><p class="eyebrow">${tr('todo')}</p><h1>${tr('deadlines')}</h1><p class="date-line">${tr('deadlinesHint')}</p></div><div class="todo-heading-actions"><div class="todo-stats"><span><strong>${open}</strong>${tr('open')}</span><span><strong>${done}</strong>${tr('completed')}</span></div><button class="filter-button" id="openHistory">⌕ ${tr('openHistory')}</button></div></div>
     <div class="todo-groups">${groups.map(group => {
-      const items = state.todos.filter(group.matches).sort((a,b)=>`${a.date || '9999'}T${a.time || '99:99'}`.localeCompare(`${b.date || '9999'}T${b.time || '99:99'}`));
+      const items = visibleTodos.filter(group.matches).sort((a,b)=>`${groupDate(a) || '9999'}T${a.time || '99:99'}`.localeCompare(`${groupDate(b) || '9999'}T${b.time || '99:99'}`));
       const dropDate = group.key === 'today' ? offsetISO(0) : group.key === 'tomorrow' ? offsetISO(1) : '';
       return `<section class="todo-group" data-group="${esc(group.key)}" data-date="${dropDate}"><div class="group-title"><h2>${esc(group.label)}</h2><span>${items.length}</span></div>${items.length ? items.map(item=>`<div class="todo-row ${item.done?'done':''}" draggable="true" data-todo="${esc(item.id)}"><button type="button" class="check" aria-label="${item.done ? 'Undo' : 'Complete'}">✓</button><button type="button" class="todo-open" data-edit-todo="${esc(item.id)}"><span class="todo-main"><strong>${esc(item.title)}</strong>${item.schedule?`<span><b class="schedule-eye">◉</b>${tr('scheduleShown')}</span>`:''}</span><span class="todo-deadline">${esc(todoDeadlineLabel(item))}</span></button></div>`).join('') : `<div class="empty-state">—</div>`}</section>`;
     }).join('')}</div>
